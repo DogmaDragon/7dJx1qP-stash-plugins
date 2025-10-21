@@ -18,7 +18,7 @@
                 const toolbar = document.querySelector(".btn-toolbar");
 
                 const newGroup = document.createElement('div');
-                newGroup.classList.add('mx-2', 'mb-2', 'd-flex');
+                newGroup.classList.add('mx-2', 'ml-2', 'd-flex');
                 toolbar.appendChild(newGroup);
 
                 const newButton = document.createElement("a");

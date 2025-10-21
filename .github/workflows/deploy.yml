@@ -2,7 +2,7 @@ name: Deploy repository to Github Pages
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -26,17 +26,7 @@ jobs:
     - run: |
         cd main
         ./build_site.sh ../_site/main
-    - name: Checkout develop
-      uses: actions/checkout@v2
-      with:
-        path: develop
-        # change this ref to whatever dev branch/tag we need when necessary
-        ref: develop
-        fetch-depth: '0'
-    - run: |
-        cd develop
-        ../main/build_site.sh ../_site/develop
-    - uses: actions/upload-pages-artifact@v2
+    - uses: actions/upload-pages-artifact@v4
     
   deploy:
     environment:

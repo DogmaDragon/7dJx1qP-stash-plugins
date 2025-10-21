@@ -4,4 +4,4 @@ version: 0.43.0
 url: https://github.com/7dJx1qP/stash-plugins
 ui:
   javascript:
-  - stashUserscriptLibrary7dJx1qPForkFork.js
+  - stashUserscriptLibrary7dJx1qPFork.js

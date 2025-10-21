@@ -1,11 +1,11 @@
 name: Stash Markdown
-# requires: stashUserscriptLibrary7dJx1qP
+# requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds markdown parsing to tag description fields
 version: 0.5.2
 url: https://github.com/7dJx1qP/stash-plugins#stash-markdown
 ui:
   requires: 
-  - stashUserscriptLibrary7dJx1qP
+  - stashUserscriptLibrary7dJx1qPFork
   javascript:
   - https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.2/marked.min.js
   - stashMarkdown.js

@@ -1,10 +1,10 @@
 name: Stash Performer Custom Fields
-# requires: stashUserscriptLibrary
+# requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds custom fields to performers that are stored in performer details as JSON.
 version: 0.4.1
 ui:
   requires: 
-  - stashUserscriptLibrary7dJx1qP
+  - stashUserscriptLibrary7dJx1qPFork
   javascript:
   - stashPerformerCustomFields.js
 exec:

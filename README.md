@@ -2,7 +2,7 @@
 
 ## Installation
 
-https://7djx1qp.github.io/stash-plugins/main/index.yml
+https://dogmadragon.github.io/7dJx1qP-stash-plugins/main/index.yml
 
 ## Plugin List
 

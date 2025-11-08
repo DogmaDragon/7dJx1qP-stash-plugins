@@ -190,7 +190,6 @@ fragment StudioData on Studio {
         detailItem.appendChild(detailTitle);
         const detailValue = document.createElement('span');
         detailValue.classList.add('detail-item-value', 'stash-id-input');
-        detailValue.style.setProperty('display', 'unset', 'important');
         detailItem.appendChild(detailValue);
         const stashboxInputContainer = document.createElement('div');
         const stashboxInput = document.createElement('select');

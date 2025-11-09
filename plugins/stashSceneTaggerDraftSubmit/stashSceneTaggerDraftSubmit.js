@@ -65,7 +65,7 @@
                 continue;
             }
 
-            const submit = createElementFromHTML('<div class="mt-2 text-right submit-draft"><button class="btn btn-primary">Submit StashDB Draft</button></div>');
+            const submit = createElementFromHTML('<div class="mt-2 text-right submit-draft"><button class="btn btn-primary">Submit stash-box Draft</button></div>');
             const submitButton = submit.querySelector('button');
             button.parentElement.parentElement.appendChild(submit);
             submitButton.addEventListener('click', async () => {

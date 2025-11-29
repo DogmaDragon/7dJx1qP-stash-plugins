@@ -1,5 +1,7 @@
 # Stash Plugins
 
+Fork of https://github.com/7dJx1qP/stash-plugins with some pending fixes merged in.
+
 ## Installation
 
 https://dogmadragon.github.io/7dJx1qP-stash-plugins/main/index.yml

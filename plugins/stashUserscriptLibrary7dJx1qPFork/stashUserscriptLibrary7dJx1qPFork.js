@@ -551,21 +551,21 @@
                     this.dispatchLocationEvent(new Event('page:image'));
                 }
 
-                // movie scenes page
-                else if (this.matchUrl(location, /\/movies\/\d+\?/)) {
-                    this.log.debug('[Navigation] Movie Page - Scenes');
+                // group scenes page
+                else if (this.matchUrl(location, /\/groups\/\d+\?/)) {
+                    this.log.debug('[Navigation] Group Page - Scenes');
                     this.processTagger();
-                    this.dispatchLocationEvent(new Event('page:movie:scenes'));
+                    this.dispatchLocationEvent(new Event('page:group:scenes'));
                 }
-                // movie page
-                else if (this.matchUrl(location, /\/movies\/\d+/)) {
-                    this.log.debug('[Navigation] Movie Page');
-                    this.dispatchLocationEvent(new Event('page:movie'));
+                // group page
+                else if (this.matchUrl(location, /\/groups\/\d+/)) {
+                    this.log.debug('[Navigation] Group Page');
+                    this.dispatchLocationEvent(new Event('page:group'));
                 }
-                // movies wall
-                else if (this.matchUrl(location, /\/movies\?/)) {
-                    this.log.debug('[Navigation] Wall-Movies Page');
-                    this.dispatchLocationEvent(new Event('page:movies'));
+                // groups wall
+                else if (this.matchUrl(location, /\/groups\?/)) {
+                    this.log.debug('[Navigation] Wall-Groups Page');
+                    this.dispatchLocationEvent(new Event('page:groups'));
                 }
 
                 // galleries wall
@@ -590,10 +590,10 @@
                     this.log.debug('[Navigation] Performer Page - Galleries');
                     this.dispatchLocationEvent(new Event('page:performer:galleries'));
                 }
-                // performer movies page
-                else if (this.matchUrl(location, /\/performers\/\d+\/movies/)) {
-                    this.log.debug('[Navigation] Performer Page - Movies');
-                    this.dispatchLocationEvent(new Event('page:performer:movies'));
+                // performer groups page
+                else if (this.matchUrl(location, /\/performers\/\d+\/groups/)) {
+                    this.log.debug('[Navigation] Performer Page - Groups');
+                    this.dispatchLocationEvent(new Event('page:performer:groups'));
                 }
                 // performer appears with page
                 else if (this.matchUrl(location, /\/performers\/\d+\/appearswith/)) {
@@ -640,10 +640,10 @@
                     this.log.debug('[Navigation] Studio Page - Performers');
                     this.dispatchLocationEvent(new Event('page:studio:performers'));
                 }
-                // studio movies page
-                else if (this.matchUrl(location, /\/studios\/\d+\/movies/)) {
-                    this.log.debug('[Navigation] Studio Page - Movies');
-                    this.dispatchLocationEvent(new Event('page:studio:movies'));
+                // studio groups page
+                else if (this.matchUrl(location, /\/studios\/\d+\/groups/)) {
+                    this.log.debug('[Navigation] Studio Page - Groups');
+                    this.dispatchLocationEvent(new Event('page:studio:groups'));
                 }
                 // studio childstudios page
                 else if (this.matchUrl(location, /\/studios\/\d+\/childstudios/)) {

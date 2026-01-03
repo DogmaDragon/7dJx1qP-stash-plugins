@@ -1,7 +1,7 @@
 name: Stash Open Media Player
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Open scene filepath links in an external media player
-version: 0.3.1
+version: 0.4
 url: https://github.com/7dJx1qP/stash-plugins#stash-open-media-player
 ui:
   requires: 
@@ -12,6 +12,10 @@ settings:
   mediaPlayerPath:
     displayName: Media Player Path
     type: STRING
+  fileUrlPrefixMode:
+    displayName: File URL Prefix Mode
+    type: STRING
+    description: "Controls how the file:/// prefix is handled for the media player. Options: auto (detect by player), keep (always keep file:///), remove (always remove file:///)."
 exec:
   - python
   - "{pluginDir}/stashOpenMediaPlayer.py"

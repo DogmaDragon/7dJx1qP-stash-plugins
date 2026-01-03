@@ -60,6 +60,38 @@
         }
     });
 
+        stash.addEventListener('page:scenes', async function () {
+        if (await isMarkdownEnabled('tags')) {
+            waitForElementByXpath("//div[contains(@class, 'scene-card__description')]", function (xpath, el) {
+                for (const node of document.querySelectorAll('.scene-card__description')) {
+                    node.style.whiteSpace = 'initial';
+                    processMarkdown(node);
+                }
+            });
+        }
+    });
+
+    stash.addEventListener('page:image', async function () {
+        if (await isMarkdownEnabled('images')) {
+            waitForElementByXpath("//div[@class='tab-content']//h6[contains(text(),'Details')]/following-sibling::p", function (xpath, el) {
+                el.style.display = 'block';
+                el.style.whiteSpace = 'initial';
+                processMarkdown(el);
+            });
+        }
+    });
+
+        stash.addEventListener('page:images', async function () {
+        if (await isMarkdownEnabled('tags')) {
+            waitForElementByXpath("//div[contains(@class, 'image-card__description')]", function (xpath, el) {
+                for (const node of document.querySelectorAll('.image-card__description')) {
+                    node.style.whiteSpace = 'initial';
+                    processMarkdown(node);
+                }
+            });
+        }
+    });
+
     stash.addEventListener('page:gallery', async function () {
         if (await isMarkdownEnabled('galleries')) {
             waitForElementByXpath("//div[@class='tab-content']//h6[contains(text(),'Details')]/following-sibling::p", function (xpath, el) {
@@ -70,8 +102,19 @@
         }
     });
 
-    stash.addEventListener('page:movie:scenes', async function () {
-        if (await isMarkdownEnabled('movies')) {
+    stash.addEventListener('page:galleries', async function () {
+        if (await isMarkdownEnabled('galleries')) {
+            waitForElementByXpath("//div[contains(@class, 'gallery-card__description')]", function (xpath, el) {
+                for (const node of document.querySelectorAll('.gallery-card__description')) {
+                    node.style.whiteSpace = 'initial';
+                    processMarkdown(node);
+                }
+            });
+        }
+    });
+
+    stash.addEventListener('page:group:scenes', async function () {
+        if (await isMarkdownEnabled('groups')) {
             waitForElementByXpath("//span[contains(@class, 'detail-item-value') and contains(@class, 'synopsis')]", function (xpath, el) {
                 el.style.display = 'block';
                 el.style.whiteSpace = 'initial';
@@ -80,10 +123,20 @@
         }
     });
 
-    stash.addEventListener('page:movies', async function () {
-        if (await isMarkdownEnabled('movies')) {
-            waitForElementByXpath("//div[contains(@class, 'movie-card__description')]", function (xpath, el) {
-                for (const node of document.querySelectorAll('.movie-card__description')) {
+    stash.addEventListener('page:group', async function () {
+        if (await isMarkdownEnabled('groups')) {
+            waitForElementByXpath("//span[contains(@class, 'detail-item-value') and contains(@class, 'synopsis')]", function (xpath, el) {
+                el.style.display = 'block';
+                el.style.whiteSpace = 'initial';
+                processMarkdown(el);
+            });
+        }
+    });
+
+    stash.addEventListener('page:groups', async function () {
+        if (await isMarkdownEnabled('groups')) {
+            waitForElementByXpath("//div[contains(@class, 'group-card__description')]", function (xpath, el) {
+                for (const node of document.querySelectorAll('.group-card__description')) {
                     node.style.whiteSpace = 'initial';
                     processMarkdown(node);
                 }

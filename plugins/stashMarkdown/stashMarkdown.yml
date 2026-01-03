@@ -1,7 +1,7 @@
 name: Stash Markdown
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds markdown parsing to tag description fields
-version: 0.5.2
+version: 0.6
 url: https://discourse.stashapp.cc/t/stash-markdown-fork/5050
 ui:
   requires: 
@@ -13,8 +13,11 @@ settings:
   scenes:
     displayName: Scenes
     type: BOOLEAN
-  movies:
-    displayName: Movies
+  images:
+    displayName: Images
+    type: BOOLEAN
+  groups:
+    displayName: Groups
     type: BOOLEAN
   galleries:
     displayName: Galleries

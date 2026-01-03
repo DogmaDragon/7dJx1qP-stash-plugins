@@ -11,12 +11,47 @@
     } = window.stash7dJx1qP;
 
     async function openMediaPlayerTask(path) {
-        // fixes decodeURI breaking on %'s because they are not encoded
-        const encodedPctPath = path.replace(/%([^\d].)/, "%25$1");
-        // decode encoded path but then encode % and # otherwise VLC breaks
-        const encodedPath = decodeURI(encodedPctPath).replaceAll('%', '%25').replaceAll('#', '%23');
         const settings = await stash.getPluginConfig('stashOpenMediaPlayer');
-        stash.runPluginTask("stashOpenMediaPlayer", "Open in Media Player", [{"key":"path", "value":{"str": encodedPath}}, {"key":"mediaPlayerPath", "value":{"str": settings?.mediaPlayerPath}}]);
+        const prefixMode = settings?.fileUrlPrefixMode || 'auto';
+        const mediaPlayerPath = settings?.mediaPlayerPath || '';
+
+        let filePath = path;
+        let useFileUrl = false;
+
+        if (prefixMode === 'keep') {
+            useFileUrl = true;
+        } else if (prefixMode === 'remove') {
+            useFileUrl = false;
+        } else {
+            // auto mode: detect by player path
+            const lower = mediaPlayerPath.toLowerCase();
+            if (lower.includes('vlc')) {
+                useFileUrl = true;
+            } else if (lower.includes('mpc')) {
+                useFileUrl = false;
+            } else {
+                useFileUrl = path.startsWith('file:///');
+            }
+        }
+
+        if (useFileUrl) {
+            if (!filePath.startsWith('file:///')) {
+                // Add prefix if missing
+                filePath = 'file:///' + filePath.replace(/^([A-Za-z]:\\|\/)/, (m) => m.replace(/\\/g, '/'));
+            }
+        } else {
+            if (filePath.startsWith('file:///')) {
+                filePath = filePath.substring(8);
+            }
+        }
+
+        // Decode the URI-encoded path (after prefix handling)
+        const decodedPath = decodeURIComponent(filePath);
+
+        stash.runPluginTask("stashOpenMediaPlayer", "Open in Media Player", [
+            {"key":"path", "value": {"str": decodedPath}},
+            {"key":"mediaPlayerPath", "value": {"str": mediaPlayerPath}}
+        ]);
     }
     stash.openMediaPlayerTask = openMediaPlayerTask;
 

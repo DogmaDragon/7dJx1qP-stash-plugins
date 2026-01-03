@@ -2,7 +2,7 @@ name: Stash Performer URL Searchbox
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds a search by performer url textbox to the performers page
 version: 0.2.1
-url: https://github.com/7dJx1qP/stash-plugins#stash-performer-url-searchbox
+url: https://discourse.stashapp.cc/t/stash-performer-url-searchbox-fork/5059
 ui:
   requires: 
   - stashUserscriptLibrary7dJx1qPFork

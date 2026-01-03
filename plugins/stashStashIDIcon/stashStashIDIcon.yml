@@ -2,7 +2,7 @@ name: Stash StashID Icon
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds checkmark icon to performer and studio cards that have a stashid
 version: 0.2.2
-url: https://github.com/7dJx1qP/stash-plugins#stash-stashid-icon
+url: https://discourse.stashapp.cc/t/stash-stashid-icon-fork/5063
 ui:
   requires: 
   - stashUserscriptLibrary7dJx1qPFork

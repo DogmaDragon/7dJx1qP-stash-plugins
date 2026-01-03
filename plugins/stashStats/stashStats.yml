@@ -2,7 +2,7 @@ name: Stash Stats
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds stats to stats page
 version: 0.5.0
-url: https://github.com/7dJx1qP/stash-plugins#stash-stats
+url: https://discourse.stashapp.cc/t/stash-stats-fork/5067
 ui:
   assets:
     /: .

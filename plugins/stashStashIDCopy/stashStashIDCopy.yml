@@ -2,7 +2,7 @@ name: Stash StashID Copy
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds a button to copy the StashID of performers, studios and tags to the clipboard
 version: 0.9
-url: https://github.com/7dJx1qP/stash-plugins#stash-stashid-input
+url: https://discourse.stashapp.cc/t/stash-stashid-copy-fork/5066
 ui:
   requires: 
   - stashUserscriptLibrary7dJx1qPFork

@@ -2,6 +2,7 @@ name: Stash Video Player AB Loop Time Input
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Replaces the video player AB loop start and end buttons with time inputs
 version: 0.1.0
+url: https://discourse.stashapp.cc/t/stash-video-player-ab-loop-time-input-fork/5069
 ui:
   requires: 
   - stashUserscriptLibrary7dJx1qPFork

@@ -2,7 +2,7 @@ name: Stash Batch Search
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds a batch search button to scenes and performers tagger
 version: 0.4.3
-url: https://github.com/7dJx1qP/stash-plugins#stash-batch-search
+url: https://discourse.stashapp.cc/t/stash-batch-search-fork/5049
 ui:
   requires: 
   - stashUserscriptLibrary7dJx1qPFork

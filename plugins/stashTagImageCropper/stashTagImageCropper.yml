@@ -2,7 +2,7 @@ name: Stash Tag Image Cropper
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds an image cropper to tag page
 version: 0.2.3
-url: https://github.com/7dJx1qP/stash-plugins#stash-tag-image-cropper
+url: https://discourse.stashapp.cc/t/stash-tag-image-cropper-fork/5068
 ui:
   requires: 
   - stashUserscriptLibrary7dJx1qPFork

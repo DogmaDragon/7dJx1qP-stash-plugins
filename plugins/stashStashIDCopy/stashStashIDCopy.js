@@ -107,8 +107,11 @@
             stashIds.push(node);
         }
         for (const stashId of stashIds) {
-            const copyBtn = createCopyButton(copyTooltip, stashId.innerText);
-            stashId.parentElement.appendChild(copyBtn);
+            // Prevent duplicate copy buttons
+            if (!stashId.parentElement.querySelector('button[title="Copy to clipboard"]')) {
+                const copyBtn = createCopyButton(copyTooltip, stashId.innerText);
+                stashId.parentElement.appendChild(copyBtn);
+            }
         }
     }
 
@@ -121,4 +124,6 @@
     stash.addEventListener('page:performer:details', pageHandler);
     stash.addEventListener('page:studio:any', pageHandler);
     stash.addEventListener('page:studio:details', pageHandler);
+    stash.addEventListener('page:tag:any', pageHandler);
+    stash.addEventListener('page:tag:details', pageHandler);
 })();

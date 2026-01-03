@@ -106,22 +106,6 @@
         return copyBtn;
     }
 
-    function copyHandler(copyTooltip, copyText) {
-        return evt => {
-            navigator.clipboard.writeText(copyText);
-            const rect = document.body.getBoundingClientRect();
-            const rect2 = evt.currentTarget.getBoundingClientRect();
-            const x = rect2.left - rect.left;
-            const y = rect2.top - rect.top;
-            copyTooltip.classList.add('show');
-            copyTooltip.style.left = `${x}px`;
-            copyTooltip.style.top = `${y}px`;
-            setTimeout(() => {
-                copyTooltip.classList.remove('show');
-            }, 500);
-        }
-    }
-
     function addCopyButtonsToStashIds() {
         const copyTooltip = createTooltipElement();
         const stashIdsResult = getElementsByXpath("//span[contains(@class, 'detail-item-value') and contains(@class, 'stash-ids')]//span[@class='stash-id-pill']/a");

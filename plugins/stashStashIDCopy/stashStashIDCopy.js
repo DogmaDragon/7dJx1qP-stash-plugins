@@ -41,7 +41,13 @@
 
     function copyHandler(copyTooltip, copyText) {
         return evt => {
-            navigator.clipboard.writeText(copyText);
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(copyText).catch(() => {
+                    fallbackCopy(copyText);
+                });
+            } else {
+                fallbackCopy(copyText);
+            }
             const rect = document.body.getBoundingClientRect();
             const rect2 = evt.currentTarget.getBoundingClientRect();
             const x = rect2.left - rect.left;
@@ -52,6 +58,24 @@
             setTimeout(() => {
                 copyTooltip.classList.remove('show');
             }, 500);
+        }
+
+        // Deprecated fallback copy function using execCommand 
+        // Needed for insecure contexts
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.setAttribute('readonly', '');
+            textarea.style.position = 'absolute';
+            textarea.style.left = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+            } catch (err) {
+                console.error('Fallback copy method failed:', err);
+            }
+            document.body.removeChild(textarea);
         }
     }
 

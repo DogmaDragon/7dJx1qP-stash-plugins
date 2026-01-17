@@ -200,6 +200,7 @@
                     this.processScenes(evt.detail);
                     this.processStudios(evt.detail);
                     this.processPerformers(evt.detail);
+                    this.processTags(evt.detail);
                     this.processApiKey(evt.detail);
                     this.dispatchEvent(new CustomEvent('stash:response', { 'detail': evt.detail }));
                 });
@@ -223,6 +224,7 @@
                 this.scenes = {};
                 this.studios = {};
                 this.performers = {};
+                this.tags = {};
                 this.userscripts = [];
                 this.sceneTaggerObserver = new MutationObserver(mutations => {
                     mutations.forEach(mutation => {
@@ -317,6 +319,35 @@
                     }
                     else {
                         this.dispatchLocationEvent(new Event('page:studio:details:expanded'));
+                    }
+                });
+            this.tagPageObserver = new MutationObserver(mutations => {
+                    let isEdit = false;
+                    let isCollapsed = false;
+                    mutations.forEach(mutation => {
+                        if (mutation.attributeName === 'class') {
+                            if (mutation.target.classList.contains('edit')) {
+                                isEdit = true;
+                            }
+                            else if (mutation.target.classList.contains('collapsed')) {
+                                isCollapsed = true;
+                            }
+                            else if (mutation.target.classList.contains('full-width')) {
+                                isCollapsed = false;
+                            }
+                        }
+                    });
+                    if (isEdit) {
+                        this.dispatchLocationEvent(new Event('page:tag:edit'));
+                    }
+                    else {
+                        this.dispatchLocationEvent(new Event('page:tag:details'));
+                    }
+                    if (isCollapsed) {
+                        this.dispatchLocationEvent(new Event('page:tag:details:collapsed'));
+                    }
+                    else {
+                        this.dispatchLocationEvent(new Event('page:tag:details:expanded'));
                     }
                 });
             }
@@ -887,6 +918,13 @@
                 if (data.data.findPerformers?.performers) {
                     for (const performer of data.data.findPerformers.performers) {
                         this.performers[performer.id] = performer;
+                    }
+                }
+            }
+            processTags(data) {
+                if (data.data.findTags?.tags) {
+                    for (const tag of data.data.findTags.tags) {
+                        this.tags[tag.id] = tag;
                     }
                 }
             }

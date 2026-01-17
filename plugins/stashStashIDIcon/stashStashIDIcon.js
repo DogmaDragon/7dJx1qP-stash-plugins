@@ -15,13 +15,13 @@
     document.body.appendChild(document.createElement('style')).textContent = `
     .peformer-stashid-icon {
         position: absolute;
-        bottom: .8rem;
+        top: .8rem;
         left: .8rem;
     }
     .studio-stashid-icon {
         position: absolute;
         top: 10px;
-        right: 5px;
+        left: 5px;
     }
     .col-3.d-xl-none .studio-stashid-icon {
         position: relative;

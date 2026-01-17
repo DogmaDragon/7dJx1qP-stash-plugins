@@ -18,6 +18,11 @@
         top: .8rem;
         left: .8rem;
     }
+    .tag-stashid-icon {
+        position: absolute;
+        top: .8rem;
+        left: .8rem;
+    }
     .studio-stashid-icon {
         position: absolute;
         top: 10px;
@@ -71,6 +76,45 @@
         }
     }
 
+    function addTagStashIDIcons(tagDatas) {
+        for (const tagCard of document.querySelectorAll('.tag-card')) {
+            const tagLink = tagCard.querySelector('.thumbnail-section > a');
+            if (!tagLink) continue;
+            const tagUrl = tagLink.href;
+            const tagId = tagUrl.split('/').pop();
+            const tagData = tagDatas[tagId];
+            if (Array.isArray(tagData?.stash_ids) && tagData.stash_ids.length > 0) {
+                const el = createElementFromHTML(`<div class="tag-stashid-icon" title="Has StashID">`);
+                el.appendChild(createCheckmarkElement());
+                tagCard.appendChild(el);
+            }
+        }
+    }
+
+        // Ensures all tag cards have stash_ids loaded in stash.tags
+        async function ensureTagsHaveStashIDs() {
+            const tagCards = document.querySelectorAll('.tag-card .thumbnail-section > a');
+            const tagIds = Array.from(tagCards).map(a => a.href.split('/').pop()).filter(id => id);
+            const missing = tagIds.filter(id => !stash.tags[id] || typeof stash.tags[id].stash_ids === 'undefined');
+            if (missing.length > 0) {
+                const reqData = {
+                    operationName: "FindTags",
+                    variables: { ids: missing },
+                    query: `query FindTags($ids: [ID!]) {\n  findTags(ids: $ids) {\n    tags { id stash_ids { endpoint stash_id } } }\n}`
+                };
+                try {
+                    const resp = await stash.callGQL(reqData);
+                    if (resp && resp.data && resp.data.findTags) {
+                        for (const tag of resp.data.findTags.tags) {
+                            stash.tags[tag.id] = tag;
+                        }
+                    }
+                } catch (e) {
+                    // fail silently
+                }
+            }
+        }
+
     function addSceneStudioStashIDIcons(studioData) {
         for (const studioCard of document.querySelectorAll('.studio-logo')) {
             if (studioData?.stash_ids.length) {
@@ -107,10 +151,16 @@
             addStudioStashIDIcons(stash.studios);
         });
     });
-
+    stash.addEventListener('page:tags', function () {
+        waitForElementClass("tag-card", async function () {
+                await ensureTagsHaveStashIDs();
+            addTagStashIDIcons(stash.tags);
+        });
+    });
     stash.addEventListener('page:studio:performers', function () {
         waitForElementClass("performer-card", function () {
             addPerformerStashIDIcons(stash.performers);
         });
     });
+
 })();

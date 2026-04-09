@@ -17,6 +17,7 @@
     document.body.appendChild(document.createElement('style')).textContent = `
     .search-item > div.row:first-child > div.col-md-6.my-1 > div:first-child { display: flex; flex-direction: column; }
     .tagger-remove { order: 10; }
+    #progress-bar .progress-bar { display: flex; align-items: center; justify-content: center; font-weight: 600; text-align: center; white-space: nowrap; }
     `;
 
     let settings = null;
@@ -24,9 +25,17 @@
         if (settings === null) {
             settings = await stash.getPluginConfig('stashBatchSave');
         }
+        settings = settings || {};
+        let hasSettingsChanges = false;
         if (settings?.enableFingerprints === undefined) {
-            settings = settings || {};
             settings.enableFingerprints = false;
+            hasSettingsChanges = true;
+        }
+        if (settings?.saveTimeoutMs === undefined) {
+            settings.saveTimeoutMs = 50;
+            hasSettingsChanges = true;
+        }
+        if (hasSettingsChanges) {
             await stash.updatePluginConfig('stashBatchSave', settings);
         }
         return settings?.enableFingerprints === true;
@@ -35,6 +44,25 @@
 
     function isEnableFingerprints() {
         return settings?.enableFingerprints === true;
+    }
+
+    function getSaveTimeoutMs() {
+        const timeoutMs = Number(settings?.saveTimeoutMs);
+        return Number.isFinite(timeoutMs) && timeoutMs >= 0 ? timeoutMs : 50;
+    }
+
+    function updateProgress(value) {
+        stash.setProgress(value);
+
+        const progressValue = Number(value);
+        const progressEl = document.querySelector('#progress-bar .progress-bar');
+        if (!progressEl || !Number.isFinite(progressValue)) {
+            return;
+        }
+
+        const boundedProgress = Math.max(0, Math.min(100, progressValue));
+        progressEl.setAttribute('aria-valuenow', boundedProgress.toString());
+        progressEl.textContent = (boundedProgress > 0 && boundedProgress <= 100) ? `${Math.round(boundedProgress)}%` : '';
     }
 
     let running = false;
@@ -46,7 +74,7 @@
     function run() {
         if (!running) return;
         const button = buttons.pop();
-        stash.setProgress((maxCount - buttons.length) / maxCount * 100);
+        updateProgress((maxCount - buttons.length) / maxCount * 100);
         if (button) {
             const searchItem = getClosestAncestor(button, '.search-item');
             if (searchItem.classList.contains('d-none')) {
@@ -112,7 +140,7 @@
             removedFingerprints.push(sceneId);
             setTimeout(() => {
                 run();
-            }, 50);
+            }, getSaveTimeoutMs());
         }
     }
 
@@ -149,7 +177,7 @@
         btn.classList.remove('btn-primary');
         btn.classList.add('btn-danger');
         running = true;
-        stash.setProgress(0);
+        updateProgress(0);
         buttons.length = 0;
         for (const button of document.querySelectorAll('.btn.btn-primary')) {
             if (button.innerText === 'Save') {
@@ -166,7 +194,7 @@
         btn.classList.remove('btn-danger');
         btn.classList.add('btn-primary');
         running = false;
-        stash.setProgress(0);
+        updateProgress(0);
         sceneId = null;
         stash.removeEventListener('stash:response', processSceneUpdate);
     }

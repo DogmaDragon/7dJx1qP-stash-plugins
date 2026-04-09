@@ -1,7 +1,7 @@
 name: Stash Batch Save
 # requires: stashUserscriptLibrary7dJx1qPFork
 description: Adds a batch save button to scenes tagger
-version: 0.5.9
+version: 0.6.0
 url: https://discourse.stashapp.cc/t/stash-batch-save-fork/5048
 ui:
   requires: 
@@ -13,3 +13,7 @@ settings:
   enableFingerprints:
     displayName: Enable fingerprint submission of batch saved scenes
     type: BOOLEAN
+  saveTimeoutMs:
+    displayName: Save delay in milliseconds
+    description: Time to wait after a change before saving, to prevent some scenes from being skipped. Default is 50 ms.
+    type: STRING

@@ -29,6 +29,26 @@
         else if (el?.parentElement?.classList.contains('optional-field-content')) {
             button = el.parentElement.previousElementSibling;
         }
+
+        if (!button) {
+            const optionalFieldContent =
+                (el?.classList?.contains('optional-field-content') && el)
+                || (el?.parentElement?.classList?.contains('optional-field-content') && el.parentElement)
+                || el?.closest?.('.optional-field-content');
+
+            if (optionalFieldContent) {
+                button = optionalFieldContent.previousElementSibling;
+            }
+        }
+        if (!button && el?.closest) {
+            const optionalField = el.closest('.optional-field');
+            button = optionalField?.querySelector(':scope > button.include-exclude-button, :scope > button') || null;
+        }
+        if (!button && el?.parentElement?.closest) {
+            const optionalField = el.parentElement.closest('.optional-field');
+            button = optionalField?.querySelector(':scope > button.include-exclude-button, :scope > button') || null;
+        }
+
         const state = button?.classList.contains('text-success');
         return {
             button,
@@ -105,7 +125,7 @@
             else if (toggleMode === -1) {
                 wantedState = false;
             }
-            if (optionNode && wantedState !== state) {
+            if (optionNode && button && wantedState !== state) {
                 button.click();
             }
         }

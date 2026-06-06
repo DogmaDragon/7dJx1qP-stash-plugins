@@ -115,18 +115,56 @@
         };
     }
 
+    async function getTaggerConfig() {
+        const data = await stash.getUIConfig();
+        let taggerConfig = data?.data?.configuration?.ui?.taggerConfig;
+        if (typeof taggerConfig === 'string') {
+            try {
+                taggerConfig = JSON.parse(taggerConfig);
+            }
+            catch (error) {
+                return null;
+            }
+        }
+        return (taggerConfig && typeof taggerConfig === 'object') ? taggerConfig : null;
+    }
+
+    async function updateTaggerConfig(taggerConfig) {
+        const reqData = {
+            operationName: 'ConfigureUISetting',
+            variables: {
+                key: 'taggerConfig',
+                value: taggerConfig,
+            },
+            query: `mutation ConfigureUISetting($key: String!, $value: Any) {
+                configureUISetting(key: $key, value: $value)
+            }`,
+        };
+        return stash.callGQL(reqData);
+    }
+
     async function updateFingerprintQueue() {
         if (isEnableFingerprints()) return;
 
-        const tagger = await localforage.getItem('tagger');
-        if (Array.isArray(tagger?.fingerprintQueue?.[tagger?.selectedEndpoint])) {
-            tagger.fingerprintQueue[tagger.selectedEndpoint] = tagger.fingerprintQueue[tagger.selectedEndpoint].filter(o => removedFingerprints.indexOf(o) < 0);
+        const taggerConfig = await getTaggerConfig();
+        const selectedEndpoint = taggerConfig?.selectedEndpoint;
+        const queueByEndpoint = taggerConfig?.fingerprintQueue;
+
+        if (selectedEndpoint && Array.isArray(queueByEndpoint?.[selectedEndpoint])) {
+            const currentQueue = queueByEndpoint[selectedEndpoint];
+            const filteredQueue = currentQueue.filter(o => removedFingerprints.indexOf(o) < 0);
+            if (filteredQueue.length !== currentQueue.length) {
+                taggerConfig.fingerprintQueue[selectedEndpoint] = filteredQueue;
+                await updateTaggerConfig(taggerConfig);
+            }
         }
-        await localforage.setItem('tagger', tagger);
 
         const el = getElementByXpath("//span[contains(text(), 'Submit') and contains(text(), 'Fingerprint')]");
         if (el) {
-            const fingerprintSet = new Set(tagger.fingerprintQueue[tagger.selectedEndpoint]);
+            const fingerprintQueue = (selectedEndpoint && Array.isArray(taggerConfig?.fingerprintQueue?.[selectedEndpoint]))
+                ? taggerConfig.fingerprintQueue[selectedEndpoint]
+                : [];
+            const fingerprintSet = new Set(fingerprintQueue);
             const removedFingerprintSet = new Set(removedFingerprints);
             el.innerText = `Submit ${fingerprintSet.size} Fingerprint${fingerprintSet.size !== 1 ? 's' : ''}`;
             el.innerText += removedFingerprintSet.size ? ` (${removedFingerprintSet.size} Batch Saved)` : '';

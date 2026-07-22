@@ -10,12 +10,118 @@
         getElementByXpath,
     } = window.stash7dJx1qP;
 
+    function safeDecodeURIComponent(value) {
+        try {
+            return decodeURIComponent(value);
+        } catch (e) {
+            return value;
+        }
+    }
+
+    function isLikelyWindowsPlayer(mediaPlayerPath) {
+        const p = (mediaPlayerPath || '').trim();
+        return /^[A-Za-z]:\\/.test(p) || p.includes('\\');
+    }
+
+    function toCanonicalPaths(rawValue, preferWindowsNative) {
+        const raw = (rawValue || '').trim();
+        if (!raw) {
+            return { nativePath: raw, fileUrl: raw };
+        }
+
+        const decodedRaw = safeDecodeURIComponent(raw);
+
+        // file:// URL input
+        if (/^file:\/\//i.test(decodedRaw)) {
+            try {
+                const url = new URL(decodedRaw);
+                const host = url.hostname;
+                const pathname = safeDecodeURIComponent(url.pathname || '');
+
+                if (host) {
+                    const uncSlash = `//${host}${pathname}`;
+                    return {
+                        nativePath: preferWindowsNative ? uncSlash.replace(/\//g, '\\\\') : uncSlash,
+                        fileUrl: `file:${encodeURI(uncSlash)}`,
+                    };
+                }
+
+                let localPath = pathname;
+                if (/^\/[A-Za-z]:\//.test(localPath)) {
+                    localPath = localPath.substring(1);
+                    return {
+                        nativePath: preferWindowsNative ? localPath.replace(/\//g, '\\\\') : localPath,
+                        fileUrl: `file:///${encodeURI(localPath.replace(/\\/g, '/'))}`,
+                    };
+                }
+
+                const unixPath = localPath || '/';
+                return {
+                    nativePath: unixPath,
+                    fileUrl: `file://${encodeURI(unixPath)}`,
+                };
+            } catch (e) {
+                // Fall through to generic handling.
+            }
+        }
+
+        // smb:// URL input
+        if (/^smb:\/\//i.test(decodedRaw)) {
+            try {
+                const url = new URL(decodedRaw);
+                const host = url.hostname;
+                const pathname = safeDecodeURIComponent(url.pathname || '');
+                const uncSlash = `//${host}${pathname}`;
+                return {
+                    nativePath: preferWindowsNative ? uncSlash.replace(/\//g, '\\\\') : uncSlash,
+                    fileUrl: `file:${encodeURI(uncSlash)}`,
+                };
+            } catch (e) {
+                // Fall through to generic handling.
+            }
+        }
+
+        // UNC path input (\\server\share or //server/share)
+        if (/^(\\\\|\/\/)/.test(decodedRaw)) {
+            const uncSlash = decodedRaw.replace(/^\\\\/, '//').replace(/\\/g, '/');
+            return {
+                nativePath: preferWindowsNative ? uncSlash.replace(/\//g, '\\\\') : uncSlash,
+                fileUrl: `file:${encodeURI(uncSlash)}`,
+            };
+        }
+
+        // Windows drive-letter path input
+        if (/^[A-Za-z]:[\\/]/.test(decodedRaw)) {
+            const slashPath = decodedRaw.replace(/\\/g, '/');
+            return {
+                nativePath: decodedRaw.replace(/\//g, '\\\\'),
+                fileUrl: `file:///${encodeURI(slashPath)}`,
+            };
+        }
+
+        // Unix-like path input
+        if (decodedRaw.startsWith('/')) {
+            return {
+                nativePath: decodedRaw,
+                fileUrl: `file://${encodeURI(decodedRaw)}`,
+            };
+        }
+
+        // Fallback: preserve original behavior as much as possible.
+        return {
+            nativePath: decodedRaw,
+            fileUrl: decodedRaw,
+        };
+    }
+
     async function openMediaPlayerTask(path) {
         const settings = await stash.getPluginConfig('stashOpenMediaPlayer');
         const prefixMode = settings?.fileUrlPrefixMode || 'auto';
         const mediaPlayerPath = settings?.mediaPlayerPath || '';
+        const preferWindowsNative = isLikelyWindowsPlayer(mediaPlayerPath);
 
-        let filePath = path;
+        const canonical = toCanonicalPaths(path, preferWindowsNative);
+        let filePath = canonical.nativePath;
         let useFileUrl = false;
 
         if (prefixMode === 'keep') {
@@ -30,26 +136,14 @@
             } else if (lower.includes('mpc')) {
                 useFileUrl = false;
             } else {
-                useFileUrl = path.startsWith('file:///');
+                useFileUrl = /^file:\/\//i.test(path);
             }
         }
 
-        if (useFileUrl) {
-            if (!filePath.startsWith('file:///')) {
-                // Add prefix if missing
-                filePath = 'file:///' + filePath.replace(/^([A-Za-z]:\\|\/)/, (m) => m.replace(/\\/g, '/'));
-            }
-        } else {
-            if (filePath.startsWith('file:///')) {
-                filePath = filePath.substring(8);
-            }
-        }
-
-        // Decode the URI-encoded path (after prefix handling)
-        const decodedPath = decodeURIComponent(filePath);
+        filePath = useFileUrl ? canonical.fileUrl : canonical.nativePath;
 
         stash.runPluginTask("stashOpenMediaPlayer", "Open in Media Player", [
-            {"key":"path", "value": {"str": decodedPath}},
+            {"key":"path", "value": {"str": filePath}},
             {"key":"mediaPlayerPath", "value": {"str": mediaPlayerPath}}
         ]);
     }

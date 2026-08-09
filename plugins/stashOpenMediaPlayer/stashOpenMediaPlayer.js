@@ -117,20 +117,29 @@
     async function openMediaPlayerTask(path) {
         const settings = await stash.getPluginConfig('stashOpenMediaPlayer');
         const prefixMode = settings?.fileUrlPrefixMode || 'auto';
-        const mediaPlayerPath = settings?.mediaPlayerPath || '';
-        const preferWindowsNative = isLikelyWindowsPlayer(mediaPlayerPath);
+        const mediaPlayerPath = (settings?.mediaPlayerPath || '').trim();
+        const useRemoteProtocol = settings?.useRemoteProtocol === true;
+        const pathMapFrom = (settings?.pathMapFrom || '').trim();
+        const pathMapTo = (settings?.pathMapTo || '').trim();
+        
+        const preferWindowsNative =
+            isLikelyWindowsPlayer(mediaPlayerPath);
 
-        const canonical = toCanonicalPaths(path, preferWindowsNative);
+        const canonical =
+            toCanonicalPaths(path, preferWindowsNative);
+
         let filePath = canonical.nativePath;
         let useFileUrl = false;
 
-        if (prefixMode === 'keep') {
+        if (useRemoteProtocol) {
+            useFileUrl = false;
+        } else if (prefixMode === 'keep') {
             useFileUrl = true;
         } else if (prefixMode === 'remove') {
             useFileUrl = false;
         } else {
-            // auto mode: detect by player path
             const lower = mediaPlayerPath.toLowerCase();
+        
             if (lower.includes('vlc')) {
                 useFileUrl = true;
             } else if (lower.includes('mpc')) {
@@ -140,13 +149,101 @@
             }
         }
 
-        filePath = useFileUrl ? canonical.fileUrl : canonical.nativePath;
+        filePath = useFileUrl
+            ? canonical.fileUrl
+            : canonical.nativePath;
 
-        stash.runPluginTask("stashOpenMediaPlayer", "Open in Media Player", [
-            {"key":"path", "value": {"str": filePath}},
-            {"key":"mediaPlayerPath", "value": {"str": mediaPlayerPath}}
-        ]);
+        if (pathMapFrom && pathMapTo) {
+            const escapedPrefix =
+                pathMapFrom.replace(
+                    /[.*+?^${}()|[\]\\]/g,
+                    '\\$&'
+                );
+
+            filePath = filePath.replace(
+                new RegExp(`^${escapedPrefix}`, 'i'),
+                pathMapTo
+            );
+        }
+
+        if (settings?.incrementPlayCount === true) {
+            await incrementScenePlayCount();
+        }
+
+        if (useRemoteProtocol) {
+            const protocolUrl =
+                `stashopenmediaplayer://open?player=${encodeURIComponent(mediaPlayerPath)}&path=${encodeURIComponent(filePath)}`;
+
+            console.log("Remote Protocol:", useRemoteProtocol);
+            console.log("Player:", mediaPlayerPath);
+            console.log("Mapped:", filePath);
+            console.log("Launching:", protocolUrl);
+
+            window.location.href = protocolUrl;
+            return;
+        }
+
+        stash.runPluginTask(
+            "stashOpenMediaPlayer",
+            "Open in Media Player",
+            [
+                {
+                    key: "path",
+                    value: { str: filePath }
+                },
+                {
+                    key: "mediaPlayerPath",
+                    value: { str: mediaPlayerPath }
+                }
+            ]
+        );
     }
+
+    async function incrementScenePlayCount() {
+        const idMatch =
+            window.location.pathname.match(/\/scenes\/(\d+)/);
+
+        if (!idMatch) {
+            return;
+        }
+
+        const sceneId = idMatch[1];
+
+        try {
+            await stash.callGQL({
+                query: `
+                    mutation SceneIncrementPlayCount($id: ID!) {
+                        sceneIncrementPlayCount(id: $id)
+                    }
+                `,
+                variables: {
+                    id: sceneId
+                }
+            });
+
+            const playCountSpan = document.querySelector(
+                '.count-button.increment-only .count-value span'
+            );
+            
+            if (playCountSpan) {
+                const current = parseInt(
+                    playCountSpan.textContent,
+                    10
+                );
+            
+                if (!Number.isNaN(current)) {
+                    playCountSpan.textContent =
+                        String(current + 1);
+                }
+            }
+        } catch (e) {
+            console.error(
+                "Failed to increment play count:",
+                e
+            );
+        }
+    }
+
     stash.openMediaPlayerTask = openMediaPlayerTask;
     function getSceneFilePath() {
         const dd = getElementByXpath("//dt[text()='Path']/following-sibling::dd");

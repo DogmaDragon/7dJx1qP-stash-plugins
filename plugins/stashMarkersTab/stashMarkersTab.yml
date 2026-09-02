@@ -1,0 +1,10 @@
+name: Stash Markers Tab
+# requires: stashUserscriptLibrary7dJx1qPFork
+description: Adds a Markers link to performer and tag pages.
+version: 0.4
+url: https://discourse.stashapp.cc/t/stash-markers-tab/15587
+ui:
+  requires: 
+  - stashUserscriptLibrary7dJx1qPFork
+  javascript:
+  - stashMarkersTab.js

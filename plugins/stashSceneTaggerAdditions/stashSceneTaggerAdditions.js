@@ -42,39 +42,57 @@
         const includeUrl = (localStorage.getItem('additions-url') || 'true') === 'true';
 
         const originalSceneDetails = searchItem.querySelector('.original-scene-details');
+        const detailsContainer = originalSceneDetails.firstChild.firstChild;
 
-        if (!originalSceneDetails.firstChild.firstChild.querySelector('.scene-url') && data.url) {
-            const sceneUrlNode = createElementFromHTML(`<a href="${data.url}" class="scene-url" target="_blank">${data.url}</a>`);
-            sceneUrlNode.style.display = includeUrl ? 'block' : 'none';
-            sceneUrlNode.style.fontWeight = 500;
-            sceneUrlNode.style.color = '#fff';
-            originalSceneDetails.firstChild.firstChild.appendChild(sceneUrlNode);
+        function createDetailRow(label, valueNode, valueClass, isVisible) {
+            const row = createElementFromHTML('<div class="scene-addition-row"></div>');
+            row.style.display = isVisible ? 'flex' : 'none';
+            row.style.alignItems = 'flex-start';
+            row.style.gap = '0.4rem';
+            row.style.fontWeight = 500;
+            row.style.color = '#fff';
+            row.style.lineHeight = 1.2;
+
+            const labelNode = createElementFromHTML(`<span class="${valueClass}-label">${label}</span>`);
+            labelNode.style.opacity = 0.75;
+            labelNode.style.whiteSpace = 'nowrap';
+
+            valueNode.classList.add(valueClass);
+            valueNode.style.color = '#fff';
+            valueNode.style.wordBreak = 'break-all';
+
+            row.appendChild(labelNode);
+            row.appendChild(valueNode);
+            return row;
         }
 
-        const paths = stash.compareVersion("0.17.0") >= 0 ? data.files.map(file => file.path) : [data.path];
-        if (!originalSceneDetails.firstChild.firstChild.querySelector('.scene-path')) {
-            for (const path of paths) {
-                if (path) {
-                    const pathNode = createElementFromHTML(`<a href="#" class="scene-path">${path}</a>`);
-                    pathNode.style.display = includePath ? 'block' : 'none';
-                    pathNode.style.fontWeight = 500;
-                    pathNode.style.color = '#fff';
-                    pathNode.addEventListener('click', evt => {
-                        evt.preventDefault();
-                        stash.openMediaPlayerTask(path);
-                    });
-                    originalSceneDetails.firstChild.firstChild.appendChild(pathNode);
+        const urls = Array.isArray(data?.urls) ? data.urls : (data?.url ? [data.url] : []);
+        if (!detailsContainer.querySelector('.scene-url')) {
+            for (const sceneUrl of urls) {
+                if (sceneUrl) {
+                    const sceneUrlNode = createElementFromHTML(`<a href="${sceneUrl}" target="_blank">${sceneUrl}</a>`);
+                    const urlRow = createDetailRow('URL:', sceneUrlNode, 'scene-url', includeUrl);
+                    detailsContainer.appendChild(urlRow);
                 }
             }
         }
 
-        const duration = stash.compareVersion("0.17.0") >= 0 ? data.files[0].duration : data.file.duration;
-        if (!originalSceneDetails.firstChild.firstChild.querySelector('.scene-duration') && duration) {
-            const durationNode = createElementFromHTML(`<span class="scene-duration">Duration: ${formatDuration(duration)}</span>`);
-            durationNode.style.display = includeDuration ? 'block' : 'none';
-            durationNode.style.fontWeight = 500;
-            durationNode.style.color = '#fff';
-            originalSceneDetails.firstChild.firstChild.appendChild(durationNode);
+        const paths = stash.compareVersion("0.17.0") >= 0 ? (data?.files || []).map(file => file.path) : [data?.path];
+        if (!detailsContainer.querySelector('.scene-path')) {
+            for (const path of paths) {
+                if (path) {
+                    const pathNode = createElementFromHTML(`<span>${path}</span>`);
+                    const pathRow = createDetailRow('Path:', pathNode, 'scene-path', includePath);
+                    detailsContainer.appendChild(pathRow);
+                }
+            }
+        }
+
+        const duration = stash.compareVersion("0.17.0") >= 0 ? data?.files?.[0]?.duration : data?.file?.duration;
+        if (!detailsContainer.querySelector('.scene-duration') && duration) {
+            const durationNode = createElementFromHTML(`<span>${formatDuration(duration)}</span>`);
+            const durationRow = createDetailRow('Duration:', durationNode, 'scene-duration', includeDuration);
+            detailsContainer.appendChild(durationRow);
         }
 
         const expandDetailsButton = originalSceneDetails.querySelector('button');
@@ -130,17 +148,17 @@
             loadSettings();
             document.getElementById('additions-duration').addEventListener('change', function () {
                 for (const node of document.querySelectorAll('.scene-duration')) {
-                    node.style.display = this.checked ? 'block' : 'none';
+                    node.parentElement.style.display = this.checked ? 'flex' : 'none';
                 }
             });
             document.getElementById('additions-path').addEventListener('change', function () {
                 for (const node of document.querySelectorAll('.scene-path')) {
-                    node.style.display = this.checked ? 'block' : 'none';
+                    node.parentElement.style.display = this.checked ? 'flex' : 'none';
                 }
             });
             document.getElementById('additions-url').addEventListener('change', function () {
                 for (const node of document.querySelectorAll('.scene-url')) {
-                    node.style.display = this.checked ? 'block' : 'none';
+                    node.parentElement.style.display = this.checked ? 'flex' : 'none';
                 }
             });
         }

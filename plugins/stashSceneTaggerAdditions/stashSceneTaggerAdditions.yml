@@ -1,12 +1,10 @@
 name: Stash Scene Tagger Additions
 # requires: stashUserscriptLibrary7dJx1qPFork
-# requires: stashOpenMediaPlayer
 description: Adds scene duration and filepath to tagger view.
-version: 0.3.2
+version: 0.3.3
 url: https://discourse.stashapp.cc/t/stash-scene-tagger-additions-fork/5060
 ui:
   requires: 
   - stashUserscriptLibrary7dJx1qPFork
-  - stashOpenMediaPlayer
   javascript:
   - stashSceneTaggerAdditions.js

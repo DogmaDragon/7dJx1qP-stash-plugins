@@ -1,0 +1,16 @@
+id: stashOpenMediaPlayer
+name: Stash Open Media Player
+metadata:
+  description: Open scene filepath links in an external media player
+version: 0.7-6ddc3e0
+date: "2026-07-22 18:44:54"
+requires: []
+source_repository: https://dogmadragon.github.io/7dJx1qP-stash-plugins/main/index.yml
+files:
+- log.py
+- stashOpenMediaPlayer.js
+- stashOpenMediaPlayer.py
+- stashOpenMediaPlayer.yml
+- install-stashOpenMediaPlayerRemote.py
+- uninstall-stashOpenMediaPlayerRemote.py
+- stashOpenMediaPlayerRemoteClient.py

@@ -3,23 +3,50 @@ name: Stash Open Media Player
 description: Open scene filepath links in an external media player
 version: 0.7
 url: https://discourse.stashapp.cc/t/stash-open-media-player-fork/5053
+
 ui:
-  requires: 
-  - stashUserscriptLibrary7dJx1qPFork
+  requires:
+    - stashUserscriptLibrary7dJx1qPFork
   javascript:
-  - stashOpenMediaPlayer.js
+    - stashOpenMediaPlayer.js
+
 settings:
   mediaPlayerPath:
     displayName: Media Player Path
     type: STRING
+
   fileUrlPrefixMode:
     displayName: File URL Prefix Mode
     type: STRING
     description: "Controls whether the media player receives a file URL (file://...) or native path. Options: auto (detect by player), keep (always pass file URL), remove (always pass native path)."
+
+  useRemoteProtocol:
+    displayName: Use Remote Protocol Handler
+    type: BOOLEAN
+    description: "For remote Stash installations (Docker, Unraid, NAS, etc.). Requires running install-stashOpenMediaPlayerRemote.py once on the computer where the media player is installed."
+
+  pathMapFrom:
+    displayName: Path Mapping From
+    type: STRING
+    description: "Optional. Example: /data"
+
+  pathMapTo:
+    displayName: Path Mapping To
+    type: STRING
+    description: "Optional. Example: //MY_SMB_SHARE/stash"
+
+  
+  incrementPlayCount:
+    displayName: Increment Play Count
+    type: BOOLEAN
+    description: "Increment the scene play count when opening in an external media player."
+
 exec:
   - python
   - "{pluginDir}/stashOpenMediaPlayer.py"
+
 interface: raw
+
 tasks:
   - name: Open in Media Player
     description: Open video
